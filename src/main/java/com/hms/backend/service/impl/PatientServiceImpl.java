@@ -23,22 +23,21 @@ public class PatientServiceImpl implements PatientService {
         Patient patient = new Patient();
         patient.setFullName(dto.getFullName());
         patient.setPhone(dto.getPhone());
+        patient.setAddress(dto.getAddress());
         patient.setGender(dto.getGender());
         patient.setDateOfBirth(dto.getDateOfBirth());
-        patient.setAddress(dto.getAddress());
 
         return patientRepository.save(patient);
     }
 
     @Override
-    public Patient getPatientById(Long id) {
-        return patientRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Patient not found with id: " + id));
+    public List<Patient> getAllPatients() {
+        return patientRepository.findAll();
     }
 
     @Override
-    public List<Patient> getAllPatients() {
-        return patientRepository.findAll();
+    public Patient getPatientById(Long id) {
+        return patientRepository.findById(id).orElse(null);
     }
 
     @Override

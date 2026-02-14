@@ -1,9 +1,6 @@
 package com.hms.backend.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-
 import java.time.LocalDate;
 
 @Entity
@@ -14,28 +11,26 @@ public class Patient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Full name is required")
     @Column(nullable = false)
     private String fullName;
 
-    @NotBlank(message = "Phone number is required")
     @Column(nullable = false, unique = true)
     private String phone;
 
-    private String gender;
-
-    @NotNull(message = "Date of birth is required")
-    private LocalDate dateOfBirth;
-
-    @NotBlank(message = "Address is required")
     @Column(nullable = false)
     private String address;
 
-    // ===== Constructors =====
-    public Patient() {
-    }
+    @Column
+    private String gender;
 
-    // ===== Getters & Setters =====
+    @Column(nullable = false)
+    private LocalDate dateOfBirth;
+
+    // REQUIRED by JPA (don’t remove it again)
+    public Patient() {}
+
+    // Getters & Setters
+
     public Long getId() {
         return id;
     }
@@ -56,6 +51,14 @@ public class Patient {
         this.phone = phone;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     public String getGender() {
         return gender;
     }
@@ -70,13 +73,5 @@ public class Patient {
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 }
