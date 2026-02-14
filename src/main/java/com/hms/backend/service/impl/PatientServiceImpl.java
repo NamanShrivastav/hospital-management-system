@@ -1,5 +1,6 @@
 package com.hms.backend.service.impl;
 
+import com.hms.backend.dto.PatientRequestDTO;
 import com.hms.backend.entity.Patient;
 import com.hms.backend.repository.PatientRepository;
 import com.hms.backend.service.PatientService;
@@ -17,14 +18,22 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public Patient createPatient(Patient patient) {
+    public Patient createPatient(PatientRequestDTO dto) {
+
+        Patient patient = new Patient();
+        patient.setFullName(dto.getFullName());
+        patient.setPhone(dto.getPhone());
+        patient.setGender(dto.getGender());
+        patient.setDateOfBirth(dto.getDateOfBirth());
+        patient.setAddress(dto.getAddress());
+
         return patientRepository.save(patient);
     }
 
     @Override
     public Patient getPatientById(Long id) {
         return patientRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Patient not found"));
+                .orElseThrow(() -> new RuntimeException("Patient not found with id: " + id));
     }
 
     @Override

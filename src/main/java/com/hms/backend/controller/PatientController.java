@@ -1,7 +1,9 @@
 package com.hms.backend.controller;
 
+import com.hms.backend.dto.PatientRequestDTO;
 import com.hms.backend.entity.Patient;
 import com.hms.backend.service.PatientService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,18 +19,20 @@ public class PatientController {
     }
 
     @PostMapping
-    public Patient createPatient(@RequestBody Patient patient) {
-        return patientService.createPatient(patient);
+    public Patient createPatient(@Valid @RequestBody PatientRequestDTO dto) {
+        return patientService.createPatient(dto);
+    }
+
+
+
+    @GetMapping
+    public List<Patient> getAllPatients() {
+        return patientService.getAllPatients();
     }
 
     @GetMapping("/{id}")
     public Patient getPatientById(@PathVariable Long id) {
         return patientService.getPatientById(id);
-    }
-
-    @GetMapping
-    public List<Patient> getAllPatients() {
-        return patientService.getAllPatients();
     }
 
     @DeleteMapping("/{id}")
