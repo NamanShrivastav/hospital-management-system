@@ -1,6 +1,10 @@
 package com.hms.backend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDate;
 
 @Entity
@@ -12,22 +16,45 @@ public class Patient {
     private Long id;
 
     @Column(nullable = false)
+    @NotBlank(message = "Full name is required")
     private String fullName;
 
+    @NotNull(message = "Age is required")
+    private Integer age;
+
     @Column(nullable = false, unique = true)
+    @NotBlank(message = "Phone Number is required")
     private String phone;
 
     @Column(nullable = false)
+    @NotBlank(message = "Address is required")
     private String address;
 
     @Column
+    @NotBlank(message = "Gender is required")
     private String gender;
 
     @Column(nullable = false)
     private LocalDate dateOfBirth;
 
-    // REQUIRED by JPA (don’t remove it again)
+    @NotBlank(message = "Email is required")
+    @Email(message = "Invalid email format")
+    @Column(unique = true)
+    private String email;
+
+    // REQUIRED by JPA
     public Patient() {}
+
+    public Patient(Long id, String fullName, Integer age, String phone, String address, String gender, LocalDate dateOfBirth, String email) {
+        this.id = id;
+        this.fullName = fullName;
+        this.age = age;
+        this.phone = phone;
+        this.address = address;
+        this.gender = gender;
+        this.dateOfBirth = dateOfBirth;
+        this.email = email;
+    }
 
     // Getters & Setters
 
@@ -35,8 +62,20 @@ public class Patient {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getFullName() {
         return fullName;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
     }
 
     public void setFullName(String fullName) {
@@ -73,5 +112,12 @@ public class Patient {
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
