@@ -3,6 +3,7 @@ package com.hms.backend.service;
 import com.hms.backend.entity.Appointment;
 import com.hms.backend.entity.Doctor;
 import com.hms.backend.entity.Patient;
+import com.hms.backend.enums.AppointmentStatus;
 import com.hms.backend.exception.ResourceNotFoundException;
 import com.hms.backend.repository.AppointmentRepository;
 import com.hms.backend.repository.DoctorRepository;
@@ -11,6 +12,8 @@ import com.hms.backend.repository.PatientRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 public class AppointmentService {
@@ -35,6 +38,18 @@ public class AppointmentService {
 
         Patient patient = patientRepository.findById(request.getPatient().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Patient not found"));
+
+        // 🚫 Prevent past appointment
+        if (request.getAppointmentTime().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Appointment time cannot be in the past");
+        }
+
+        // 🚫 Prevent double booking
+        if (appointmentRepository.existsByDoctorIdAndAppointmentTime(
+                doctor.getId(),
+                request.getAppointmentTime())) {
+            throw new IllegalArgumentException("Doctor already has appointment at this time");
+        }
 
         Appointment appointment = new Appointment();
         appointment.setDoctor(doctor);
@@ -79,10 +94,13 @@ public class AppointmentService {
     // ================= DELETE =================
     public void deleteAppointment(Long id) {
 
-        if (!appointmentRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Appointment not found");
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found"));
+
+        if (AppointmentStatus.COMPLETED.equals(appointment.getStatus())) {
+            throw new IllegalArgumentException("Cannot delete completed appointment");
         }
 
-        appointmentRepository.deleteById(id);
+        appointmentRepository.delete(appointment);
     }
 }

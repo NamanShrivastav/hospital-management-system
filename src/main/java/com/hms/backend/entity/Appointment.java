@@ -1,5 +1,6 @@
 package com.hms.backend.entity;
 
+import com.hms.backend.enums.AppointmentStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -28,8 +29,10 @@ public class Appointment {
     @NotNull(message = "Appointment time is required")
     private LocalDateTime appointmentTime;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status; // SCHEDULED, COMPLETED, CANCELLED
+    @NotNull(message = "Status is required")
+    private AppointmentStatus status;
 
     // Constructor
     public Appointment() {}
@@ -64,11 +67,11 @@ public class Appointment {
         this.appointmentTime = appointmentTime;
     }
 
-    public String getStatus() {
+    public AppointmentStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(AppointmentStatus status) {
         this.status = status;
     }
 }
