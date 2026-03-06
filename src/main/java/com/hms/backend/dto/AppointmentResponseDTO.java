@@ -3,19 +3,22 @@ package com.hms.backend.dto;
 import com.hms.backend.enums.AppointmentStatus;
 import java.time.LocalDateTime;
 
-public class AppointmentRequestDTO {
+public class AppointmentResponseDTO {
 
-    private Long patientId;
+    private Long id;
     private Long doctorId;
+    private Long patientId;
     private LocalDateTime appointmentTime;
     private AppointmentStatus status;
 
-    public Long getPatientId() {
-        return patientId;
+    public AppointmentResponseDTO() {}
+
+    public Long getId() {
+        return id;
     }
 
-    public void setPatientId(Long patientId) {
-        this.patientId = patientId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Long getDoctorId() {
@@ -24,6 +27,14 @@ public class AppointmentRequestDTO {
 
     public void setDoctorId(Long doctorId) {
         this.doctorId = doctorId;
+    }
+
+    public Long getPatientId() {
+        return patientId;
+    }
+
+    public void setPatientId(Long patientId) {
+        this.patientId = patientId;
     }
 
     public LocalDateTime getAppointmentTime() {

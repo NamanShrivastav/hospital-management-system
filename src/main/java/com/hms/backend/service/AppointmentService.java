@@ -1,9 +1,9 @@
 package com.hms.backend.service;
 
+import com.hms.backend.dto.AppointmentRequestDTO;
 import com.hms.backend.entity.Appointment;
 import com.hms.backend.entity.Doctor;
 import com.hms.backend.entity.Patient;
-import com.hms.backend.enums.AppointmentStatus;
 import com.hms.backend.exception.ResourceNotFoundException;
 import com.hms.backend.repository.AppointmentRepository;
 import com.hms.backend.repository.DoctorRepository;
@@ -12,8 +12,6 @@ import com.hms.backend.repository.PatientRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 @Service
 public class AppointmentService {
@@ -25,33 +23,23 @@ public class AppointmentService {
     public AppointmentService(AppointmentRepository appointmentRepository,
                               DoctorRepository doctorRepository,
                               PatientRepository patientRepository) {
+
         this.appointmentRepository = appointmentRepository;
         this.doctorRepository = doctorRepository;
         this.patientRepository = patientRepository;
     }
 
-    // ================= CREATE =================
-    public Appointment createAppointment(Appointment request) {
+    // CREATE
+    public Appointment createAppointment(AppointmentRequestDTO request) {
 
-        Doctor doctor = doctorRepository.findById(request.getDoctor().getId())
+        Doctor doctor = doctorRepository.findById(request.getDoctorId())
                 .orElseThrow(() -> new ResourceNotFoundException("Doctor not found"));
 
-        Patient patient = patientRepository.findById(request.getPatient().getId())
+        Patient patient = patientRepository.findById(request.getPatientId())
                 .orElseThrow(() -> new ResourceNotFoundException("Patient not found"));
 
-        // 🚫 Prevent past appointment
-        if (request.getAppointmentTime().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Appointment time cannot be in the past");
-        }
-
-        // 🚫 Prevent double booking
-        if (appointmentRepository.existsByDoctorIdAndAppointmentTime(
-                doctor.getId(),
-                request.getAppointmentTime())) {
-            throw new IllegalArgumentException("Doctor already has appointment at this time");
-        }
-
         Appointment appointment = new Appointment();
+
         appointment.setDoctor(doctor);
         appointment.setPatient(patient);
         appointment.setAppointmentTime(request.getAppointmentTime());
@@ -60,47 +48,45 @@ public class AppointmentService {
         return appointmentRepository.save(appointment);
     }
 
-    // ================= GET ALL WITH PAGINATION =================
+    // GET ALL (pagination)
     public Page<Appointment> getAllAppointments(int page, int size) {
         return appointmentRepository.findAll(PageRequest.of(page, size));
     }
 
-    // ================= GET BY ID =================
+    // GET BY ID
     public Appointment getAppointmentById(Long id) {
+
         return appointmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Appointment not found"));
     }
 
-    // ================= UPDATE =================
-    public Appointment updateAppointment(Long id, Appointment updatedRequest) {
+    // UPDATE
+    public Appointment updateAppointment(Long id, AppointmentRequestDTO request) {
 
         Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Appointment not found"));
 
-        Doctor doctor = doctorRepository.findById(updatedRequest.getDoctor().getId())
+        Doctor doctor = doctorRepository.findById(request.getDoctorId())
                 .orElseThrow(() -> new ResourceNotFoundException("Doctor not found"));
 
-        Patient patient = patientRepository.findById(updatedRequest.getPatient().getId())
+        Patient patient = patientRepository.findById(request.getPatientId())
                 .orElseThrow(() -> new ResourceNotFoundException("Patient not found"));
 
         appointment.setDoctor(doctor);
         appointment.setPatient(patient);
-        appointment.setAppointmentTime(updatedRequest.getAppointmentTime());
-        appointment.setStatus(updatedRequest.getStatus());
+        appointment.setAppointmentTime(request.getAppointmentTime());
+        appointment.setStatus(request.getStatus());
 
         return appointmentRepository.save(appointment);
     }
 
-    // ================= DELETE =================
+    // DELETE
     public void deleteAppointment(Long id) {
 
-        Appointment appointment = appointmentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found"));
-
-        if (AppointmentStatus.COMPLETED.equals(appointment.getStatus())) {
-            throw new IllegalArgumentException("Cannot delete completed appointment");
+        if (!appointmentRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Appointment not found");
         }
 
-        appointmentRepository.delete(appointment);
+        appointmentRepository.deleteById(id);
     }
 }

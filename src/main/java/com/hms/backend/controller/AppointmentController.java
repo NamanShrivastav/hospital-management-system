@@ -1,15 +1,12 @@
 package com.hms.backend.controller;
 
+import com.hms.backend.dto.AppointmentRequestDTO;
 import com.hms.backend.entity.Appointment;
 import com.hms.backend.service.AppointmentService;
-
-import jakarta.validation.Valid;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/appointments")
@@ -21,13 +18,17 @@ public class AppointmentController {
         this.appointmentService = appointmentService;
     }
 
+    // CREATE
     @PostMapping
     public ResponseEntity<Appointment> createAppointment(
-            @Valid @RequestBody Appointment request) {
+            @RequestBody AppointmentRequestDTO requestDTO) {
 
-        return ResponseEntity.ok(appointmentService.createAppointment(request));
+        return ResponseEntity.ok(
+                appointmentService.createAppointment(requestDTO)
+        );
     }
 
+    // GET ALL
     @GetMapping
     public ResponseEntity<Page<Appointment>> getAllAppointments(
             @RequestParam(defaultValue = "0") int page,
@@ -38,21 +39,27 @@ public class AppointmentController {
         );
     }
 
+    // GET BY ID
     @GetMapping("/{id}")
     public ResponseEntity<Appointment> getAppointmentById(@PathVariable Long id) {
-        return ResponseEntity.ok(appointmentService.getAppointmentById(id));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Appointment> updateAppointment(
-            @PathVariable Long id,
-            @Valid @RequestBody Appointment updatedRequest) {
 
         return ResponseEntity.ok(
-                appointmentService.updateAppointment(id, updatedRequest)
+                appointmentService.getAppointmentById(id)
         );
     }
 
+    // UPDATE
+    @PutMapping("/{id}")
+    public ResponseEntity<Appointment> updateAppointment(
+            @PathVariable Long id,
+            @RequestBody AppointmentRequestDTO requestDTO) {
+
+        return ResponseEntity.ok(
+                appointmentService.updateAppointment(id, requestDTO)
+        );
+    }
+
+    // DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteAppointment(@PathVariable Long id) {
 
