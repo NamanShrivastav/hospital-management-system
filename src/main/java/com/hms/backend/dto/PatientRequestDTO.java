@@ -2,14 +2,21 @@ package com.hms.backend.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
 public class PatientRequestDTO {
 
     @NotBlank(message = "Full name is required")
+    @Size(min = 2,max = 50,message = "Name must be between 2 and 50 characters")
     private String fullName;
 
     @NotBlank(message = "Phone is required")
+    @Pattern(
+            regexp = "^[0-9]{10}$",
+            message = "Phone number must 10 digits"
+    )
     private String phone;
 
     @NotBlank(message = "Address is required")

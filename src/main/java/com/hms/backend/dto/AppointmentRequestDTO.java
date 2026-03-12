@@ -2,6 +2,8 @@ package com.hms.backend.dto;
 
 import com.hms.backend.enums.AppointmentStatus;
 import java.time.LocalDateTime;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Future;
 
 public class AppointmentRequestDTO {
 
@@ -41,4 +43,5 @@ public class AppointmentRequestDTO {
     public void setStatus(AppointmentStatus status) {
         this.status = status;
     }
+
 }
